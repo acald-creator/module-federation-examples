@@ -1,4 +1,5 @@
 packages:
-  - dashboard
-  - remote
-  - cloud
+  - apps/nextjs-cra/dashboard
+  - apps/nextjs-cra/remote
+  - apps/nextjs-cra/cloud
+  - packages/*
