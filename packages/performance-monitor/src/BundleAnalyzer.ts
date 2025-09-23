@@ -1,5 +1,5 @@
 import { PerformanceMonitor } from './PerformanceMonitor';
-import { BundleMetric } from './types';
+import { BundleMetric, BundleInfo } from './types';
 
 export interface BundleAnalyzerConfig {
   trackBundleSizes: boolean;
@@ -13,17 +13,6 @@ export interface BundleAnalyzerConfig {
   };
 }
 
-export interface BundleInfo {
-  name: string;
-  url: string;
-  size: number;
-  gzippedSize?: number;
-  loadTime: number;
-  compressionRatio?: number;
-  category: 'small' | 'medium' | 'large' | 'huge';
-  type: 'javascript' | 'stylesheet' | 'module-federation' | 'other';
-  cached: boolean;
-}
 
 export class BundleAnalyzer {
   private monitor: PerformanceMonitor;
