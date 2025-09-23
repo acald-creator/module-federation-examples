@@ -6,12 +6,45 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **You MUST use Graphite (gt) for ALL changes. Never use git directly for commits or branches.**
 
+### Primary Graphite Commands
+- **Instead of `git add . && git commit`:** Use `gt create -m "message"`
+- **Instead of `git push`:** Use `gt submit --no-interactive`
+- **Instead of `git checkout -b`:** Use `gt branch create <name>`
+- **For commits on existing branch:** Use `gt commit -m "message"`
+- **To view your stack:** Use `gt stack`
+- **To navigate:** Use `gt up` and `gt down`
+
+## MANDATORY: Stack Planning Before Code
+
+**Before writing ANY code, you MUST:**
+
+1. Present the complete stack structure
+2. Show estimated lines of code per PR  
+3. Confirm each PR will be atomic and pass CI
+4. Get explicit user confirmation
+
+### Stack Planning Template
+```
+Proposed Stack for [Feature/Fix] (#issue-number):
+└── base-branch-name
+    ├── feat/specific-change-1    (~X lines: description)
+    ├── feat/specific-change-2    (~Y lines: description)
+    ├── test/related-tests        (~Z lines: description)
+    └── docs/documentation         (~N lines: description)
+
+Each PR is atomic and will pass CI independently.
+Confirm? (y/n)
+```
+
+**Wait for user confirmation before proceeding with implementation.**
+
 ### Stacking Rules
-1. Break ALL work into small, focused PRs (<300 lines each)
+1. Break ALL work into small, focused PRs (<300 lines each, ideally <100)
 2. Each PR should be independently reviewable and testable
-3. Create a new branch for each logical change using `gt branch create <name>`
-4. Commit using `gt commit -m "message"` 
-5. Submit stacks using `gt stack submit`
+3. Each PR MUST be atomic and pass CI on its own
+4. Create a new branch for each logical change using `gt branch create <name>`
+5. Commit using `gt create -m "message"` or `gt commit -m "message"`
+6. Submit stacks using `gt submit --no-interactive`
 
 ### Stack Structure for Module Federation Changes
 
@@ -24,17 +57,44 @@ When implementing features, organize your Todos as a stack:
 5. **Tests** - Test files in separate PR(s)
 6. **Documentation** - README updates, comments
 
+### Example Stack Planning
+
+Before implementing, present this structure:
+
+```
+Proposed Stack for Performance Monitoring (#3):
+└── feat/perf-monitor-base
+    ├── feat/perf-package-setup      (~50 lines: package.json, structure)
+    ├── feat/perf-core-class         (~150 lines: PerformanceMonitor class)
+    ├── feat/perf-mf-metrics         (~200 lines: MF-specific tracking)
+    ├── feat/perf-web-vitals         (~100 lines: Web Vitals integration)
+    ├── test/perf-monitor-tests      (~200 lines: Unit tests)
+    └── docs/perf-monitor-docs       (~100 lines: Documentation)
+
+Each PR is atomic and will pass CI independently.
+Confirm? (y/n)
+```
+
 ### Example Stack for New Features
 ```bash
 # For adding a new shared component:
 gt branch create feat/component-types        # TypeScript interfaces
-gt branch create feat/component-impl         # Component implementation  
+gt create -m "feat: add component type definitions (#issue)"
+
+gt branch create feat/component-impl         # Component implementation
+gt create -m "feat: implement component core (#issue)"
+
 gt branch create feat/component-export       # Module Federation exposure
+gt create -m "feat: expose component via Module Federation (#issue)"
+
 gt branch create test/component             # Tests
+gt create -m "test: add component unit tests (#issue)"
+
 gt branch create docs/component             # Documentation
+gt create -m "docs: add component documentation (#issue)"
 
 # Submit entire stack
-gt stack submit
+gt submit --no-interactive
 ```
 
 ## Commands
@@ -111,27 +171,54 @@ We're transforming this into a comprehensive Module Federation examples reposito
 - Issue #5: Documentation overhaul
 
 ## How to Work on Issues with Stacking
-For Issue #2 (Repository Restructure), create this stack:
 
-```bash
-gt branch create feat/repo-structure      # Create apps/ directory structure
-gt branch create feat/move-apps          # Move existing apps to apps/nextjs-cra/
-gt branch create feat/packages-setup     # Create packages/ directory
-gt branch create feat/lerna-config       # Update lerna.json and package.json
-gt branch create feat/scripts-setup      # Add benchmark scripts
-gt branch create docs/restructure        # Update documentation
+**IMPORTANT: Always present your stack plan and wait for confirmation before implementing.**
+
+For Issue #2 (Repository Restructure), present this stack:
+
+```
+Proposed Stack for Repository Restructure (#2):
+└── main
+    ├── feat/repo-structure      (~30 lines: Create apps/ directory structure)
+    ├── feat/move-apps          (~20 lines: Move existing to apps/nextjs-cra/)
+    ├── feat/packages-setup     (~40 lines: Create packages/ directory)
+    ├── feat/lerna-config       (~25 lines: Update lerna.json and package.json)
+    ├── feat/scripts-setup      (~50 lines: Add benchmark scripts)
+    └── docs/restructure        (~30 lines: Update documentation)
+
+Each PR is atomic and will pass CI independently.
+Confirm? (y/n)
 ```
 
-## For Issue #3 (Performance Monitoring), create this stack:
-
+After confirmation, implement:
 ```bash
-gt branch create feat/perf-package       # Create package structure
-gt branch create feat/perf-core          # Core monitoring class
-gt branch create feat/perf-mf-metrics    # Module Federation specific metrics
-gt branch create feat/perf-web-vitals    # Web Vitals integration
-gt branch create feat/perf-reporting     # Report generation
-gt branch create test/perf-monitor       # Tests
-gt branch create docs/perf-monitor       # Documentation
+gt branch create feat/repo-structure
+# ... make changes ...
+gt create -m "feat: create apps directory structure (#2)"
+
+gt branch create feat/move-apps
+# ... make changes ...
+gt create -m "feat: move existing apps to apps/nextjs-cra (#2)"
+
+# Continue for each PR...
+gt submit --no-interactive
+```
+
+For Issue #3 (Performance Monitoring), present this stack:
+
+```
+Proposed Stack for Performance Monitoring (#3):
+└── main
+    ├── feat/perf-package       (~40 lines: Create package structure)
+    ├── feat/perf-core          (~150 lines: Core monitoring class)
+    ├── feat/perf-mf-metrics    (~200 lines: Module Federation metrics)
+    ├── feat/perf-web-vitals    (~100 lines: Web Vitals integration)
+    ├── feat/perf-reporting     (~80 lines: Report generation)
+    ├── test/perf-monitor       (~150 lines: Tests)
+    └── docs/perf-monitor       (~50 lines: Documentation)
+
+Each PR is atomic and will pass CI independently.
+Confirm? (y/n)
 ```
 
 ### Commit Message Format
@@ -162,16 +249,35 @@ When making changes that could affect performance:
 
 ## Adding New Module Federation Examples
 
-When adding a new example, create this stack structure:
+When adding a new example, present this stack structure first:
+
+```
+Proposed Stack for [Example Name]:
+└── main
+    ├── feat/example-scaffold    (~40 lines: Directory and package.json)
+    ├── feat/example-webpack     (~80 lines: Webpack/build configuration)
+    ├── feat/example-host        (~150 lines: Host application)
+    ├── feat/example-remote      (~100 lines: Remote application(s))
+    ├── feat/example-shared      (~30 lines: Shared dependencies config)
+    ├── test/example            (~100 lines: Tests)
+    └── docs/example            (~50 lines: Documentation)
+
+Each PR is atomic and will pass CI independently.
+Confirm? (y/n)
+```
+
+After confirmation:
 ```bash
-gt branch create feat/example-scaffold    # Directory and package.json
-gt branch create feat/example-webpack     # Webpack/build configuration
-gt branch create feat/example-host        # Host application
-gt branch create feat/example-remote      # Remote application(s)
-gt branch create feat/example-shared      # Shared dependencies config
-gt branch create test/example            # Tests
-gt branch create docs/example            # Documentation
-gt stack submit                          # Submit entire stack for review
+gt branch create feat/example-scaffold
+# ... create structure ...
+gt create -m "feat: scaffold new example structure"
+
+gt branch create feat/example-webpack
+# ... add configuration ...
+gt create -m "feat: add webpack configuration for example"
+
+# Continue through stack...
+gt submit --no-interactive
 ```
 
 ## Testing Requirements
@@ -181,6 +287,7 @@ Each PR in your stack should:
 2. Include new tests if adding functionality
 3. Not break other apps in the monorepo
 4. Maintain or improve performance metrics
+5. Be independently deployable/runnable
 
 ## Common Module Federation Patterns to Implement
 
@@ -198,6 +305,7 @@ When working on a GitHub issue:
 2. Include "Part of #X" or "Closes #X" in commit messages
 3. Break large issues into multiple PRs in a stack
 4. Update issue with PR links as you create them
+5. Always present stack structure before implementation
 
 ## File Organization Standards
 
@@ -211,19 +319,38 @@ When working on a GitHub issue:
 
 When submitting PRs, include:
 
-## Purpose
+### Purpose
 Closes #[issue-number] or Part of #[issue-number]
 
-## Changes
+### Changes
 - Brief description of what changed
 - Why this approach was taken
 
-## Testing
+### Testing
 - [ ] All apps start correctly with `pnpm dev`
 - [ ] No console errors
 - [ ] Tests pass
 - [ ] Performance metrics maintained or improved
 
-## Stack Position
-- Previous PR: #[number]
-- Next PR: #[number]
+### Stack Position
+- Previous PR: #[number] or "Stack base"
+- Next PR: #[number] or "Stack top"
+
+## Atomic PR Checklist
+
+Before committing any PR in a stack, verify:
+- [ ] This PR can be checked out and run independently
+- [ ] All tests pass with just this PR's changes
+- [ ] The application builds successfully
+- [ ] No references to code that only exists in later PRs
+- [ ] Changes are focused and under 300 lines (ideally <100)
+
+## Remember
+
+**The goal is to make code review delightful through small, focused, logical PRs that tell a story of incremental progress.**
+
+- Always use `gt create` instead of `git commit`
+- Always use `gt submit --no-interactive` instead of `git push`
+- Always present your stack plan and wait for confirmation
+- Each PR must be atomic and pass CI independently
+- Never reference code that doesn't exist yet in the current PR
