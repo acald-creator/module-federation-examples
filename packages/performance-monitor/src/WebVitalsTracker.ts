@@ -194,6 +194,7 @@ export class WebVitalsTracker {
         needsImprovement: 0,
         poor: 0,
       },
+      metrics,
     };
 
     Object.entries(vitals).forEach(([name, value]) => {
