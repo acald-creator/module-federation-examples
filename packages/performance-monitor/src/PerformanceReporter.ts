@@ -41,9 +41,9 @@ export interface ComprehensiveReport extends PerformanceReport {
 
 export class PerformanceReporter {
   private monitor: PerformanceMonitor;
-  private mfTracker?: ModuleFederationTracker;
-  private webVitalsTracker?: WebVitalsTracker;
-  private bundleAnalyzer?: BundleAnalyzer;
+  private mfTracker: ModuleFederationTracker | undefined;
+  private webVitalsTracker: WebVitalsTracker | undefined;
+  private bundleAnalyzer: BundleAnalyzer | undefined;
   private config: ReporterConfig;
   private sessionStartTime: number;
 
@@ -66,9 +66,9 @@ export class PerformanceReporter {
   }
 
   public setTrackers(trackers: {
-    moduleFederation?: ModuleFederationTracker;
-    webVitals?: WebVitalsTracker;
-    bundleAnalyzer?: BundleAnalyzer;
+    moduleFederation: ModuleFederationTracker | undefined;
+    webVitals: WebVitalsTracker | undefined;
+    bundleAnalyzer: BundleAnalyzer | undefined;
   }): void {
     this.mfTracker = trackers.moduleFederation;
     this.webVitalsTracker = trackers.webVitals;
