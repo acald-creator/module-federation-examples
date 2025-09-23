@@ -7,3 +7,4 @@
 export * from './types';
 export * from './PerformanceMonitor';
 export * from './ModuleFederationTracker';
+export * from './WebVitalsTracker';
