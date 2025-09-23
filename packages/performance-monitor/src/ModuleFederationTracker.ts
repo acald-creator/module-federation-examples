@@ -12,7 +12,6 @@ export class ModuleFederationTracker {
   private monitor: PerformanceMonitor;
   private config: ModuleFederationConfig;
   private originalFetch: typeof fetch;
-  private originalImport: typeof import;
   private loadCache = new Set<string>();
   private pendingLoads = new Map<string, number>();
 
@@ -191,14 +190,14 @@ export class ModuleFederationTracker {
                 encodedSize: resource.encodedBodySize?.toString() || '0',
                 decodedSize: resource.decodedBodySize?.toString() || '0',
                 protocol: resource.nextHopProtocol || 'unknown',
-                dns: resource.domainLookupEnd - resource.domainLookupStart,
-                tcp: resource.connectEnd - resource.connectStart,
-                ssl: resource.secureConnectionStart > 0
+                dns: (resource.domainLookupEnd - resource.domainLookupStart).toString(),
+                tcp: (resource.connectEnd - resource.connectStart).toString(),
+                ssl: (resource.secureConnectionStart > 0
                   ? resource.connectEnd - resource.secureConnectionStart
-                  : 0,
-                ttfb: resource.responseStart - resource.requestStart,
-                download: resource.responseEnd - resource.responseStart,
-              } as Record<string, string>,
+                  : 0).toString(),
+                ttfb: (resource.responseStart - resource.requestStart).toString(),
+                download: (resource.responseEnd - resource.responseStart).toString(),
+              },
             });
           }
         }
