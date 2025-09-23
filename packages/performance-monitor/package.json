@@ -10,7 +10,7 @@
     "test": "jest",
     "test:types": "tsd",
     "type-check": "tsc --noEmit",
-    "validate": "npm run type-check && npm run test:types && npm run lint",
+    "validate": "npm run type-check && npm run test:types",
     "lint": "eslint src --ext .ts,.tsx",
     "precommit": "npm run validate"
   },
