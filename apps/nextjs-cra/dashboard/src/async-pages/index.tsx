@@ -28,13 +28,22 @@ export default function Home() {
 
       {/* Performance Dashboard */}
       <PerformanceDashboard
+        enabled={true}
         includeWebVitals={true}
         includeModuleFederation={true}
         includeBundleAnalysis={true}
         remoteUrls={['http://localhost:8081', 'http://localhost:8082']}
         autoReport={true}
         reportInterval={15000}
-        style={{ marginBottom: '32px' }}
+        title="Module Federation Performance Monitor"
+        showDownloadButton={true}
+        showClearButton={true}
+        style={{
+          marginBottom: '32px',
+          border: '1px solid #e1e5e9',
+          borderRadius: '8px',
+          padding: '16px'
+        }}
       />
 
       <Text as="h2">Host - Button</Text>
