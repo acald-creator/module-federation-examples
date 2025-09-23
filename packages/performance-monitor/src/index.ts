@@ -10,3 +10,6 @@ export * from './ModuleFederationTracker';
 export * from './WebVitalsTracker';
 export * from './BundleAnalyzer';
 export * from './PerformanceReporter';
+
+// React components and hooks
+export * from './react';
