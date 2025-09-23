@@ -7,12 +7,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **You MUST use Graphite (gt) for ALL changes. Never use git directly for commits or branches.**
 
 ### Primary Graphite Commands
-- **Instead of `git add . && git commit`:** Use `gt create -m "message"`
-- **Instead of `git push`:** Use `gt submit --no-interactive`
-- **Instead of `git checkout -b`:** Use `gt branch create <name>`
-- **For commits on existing branch:** Use `gt commit -m "message"`
-- **To view your stack:** Use `gt stack`
-- **To navigate:** Use `gt up` and `gt down`
+- **Create branch + commit in one step:** `gt create <branch-name> -m "commit message"`
+- **Create branch only:** `gt create <branch-name>` (then make changes and commit)
+- **Commit on existing branch:** `gt modify -c -m "commit message"`
+- **Navigate between branches:** `gt checkout <branch>`, `gt up`, `gt down`
+- **Submit stack:** `gt submit --no-interactive`
+- **View your stack:** `gt log`
+- **Delete empty branch:** `gt delete <branch-name>`
 
 ## MANDATORY: Stack Planning Before Code
 
@@ -42,9 +43,11 @@ Confirm? (y/n)
 1. Break ALL work into small, focused PRs (<300 lines each, ideally <100)
 2. Each PR should be independently reviewable and testable
 3. Each PR MUST be atomic and pass CI on its own
-4. Create a new branch for each logical change using `gt branch create <name>`
-5. Commit using `gt create -m "message"` or `gt commit -m "message"`
-6. Submit stacks using `gt submit --no-interactive`
+4. Create a new branch for each logical change using `gt create <name>`
+5. Commit using `gt modify -c -m "message"` after making changes
+6. Verify commits exist with `gt log` before submitting
+7. Remove empty branches with `gt delete <branch>` if needed
+8. Submit stacks using `gt submit --no-interactive`
 
 ### Stack Structure for Module Federation Changes
 
@@ -78,24 +81,68 @@ Confirm? (y/n)
 ### Example Stack for New Features
 ```bash
 # For adding a new shared component:
-gt branch create feat/component-types        # TypeScript interfaces
-gt create -m "feat: add component type definitions (#issue)"
+gt create feat/component-types
+# ... make changes ...
+gt modify -c -m "feat: add component type definitions (#issue)"
 
-gt branch create feat/component-impl         # Component implementation
-gt create -m "feat: implement component core (#issue)"
+gt create feat/component-impl
+# ... make changes ...
+gt modify -c -m "feat: implement component core (#issue)"
 
-gt branch create feat/component-export       # Module Federation exposure
-gt create -m "feat: expose component via Module Federation (#issue)"
+gt create feat/component-export
+# ... make changes ...
+gt modify -c -m "feat: expose component via Module Federation (#issue)"
 
-gt branch create test/component             # Tests
-gt create -m "test: add component unit tests (#issue)"
+gt create test/component
+# ... make changes ...
+gt modify -c -m "test: add component unit tests (#issue)"
 
-gt branch create docs/component             # Documentation
-gt create -m "docs: add component documentation (#issue)"
+gt create docs/component
+# ... make changes ...
+gt modify -c -m "docs: add component documentation (#issue)"
 
-# Submit entire stack
+# Verify all branches have commits before submitting
+gt log
+
+# Submit entire stack (or individual branches if needed)
 gt submit --no-interactive
 ```
+
+## Troubleshooting Graphite Stacks
+
+### Empty Branches Block Submission
+If `gt submit` fails with "Nothing to submit!" or warnings about empty branches:
+
+1. **Check which branches are empty:**
+   ```bash
+   gt log  # Look for branches with no commit info
+   ```
+
+2. **Delete empty branches:**
+   ```bash
+   gt delete <empty-branch-name>
+   ```
+
+3. **Submit cleaned stack:**
+   ```bash
+   gt submit --no-interactive
+   ```
+
+### Submit Individual Branches
+If stack submission continues to fail:
+
+1. **Navigate to each branch and submit individually:**
+   ```bash
+   gt checkout <branch-with-commits>
+   gt submit --no-interactive
+   ```
+
+2. **Repeat for each branch in your stack**
+
+### Branch Navigation
+- **Move up/down stack:** `gt up`, `gt down`
+- **Jump to specific branch:** `gt checkout <branch-name>`
+- **See full stack:** `gt log`
 
 ## Commands
 
@@ -192,13 +239,13 @@ Confirm? (y/n)
 
 After confirmation, implement:
 ```bash
-gt branch create feat/repo-structure
+gt create feat/repo-structure
 # ... make changes ...
-gt create -m "feat: create apps directory structure (#2)"
+gt modify -c -m "feat: create apps directory structure (#2)"
 
-gt branch create feat/move-apps
+gt create feat/move-apps
 # ... make changes ...
-gt create -m "feat: move existing apps to apps/nextjs-cra (#2)"
+gt modify -c -m "feat: move existing apps to apps/nextjs-cra (#2)"
 
 # Continue for each PR...
 gt submit --no-interactive
@@ -268,15 +315,16 @@ Confirm? (y/n)
 
 After confirmation:
 ```bash
-gt branch create feat/example-scaffold
+gt create feat/example-scaffold
 # ... create structure ...
-gt create -m "feat: scaffold new example structure"
+gt modify -c -m "feat: scaffold new example structure"
 
-gt branch create feat/example-webpack
+gt create feat/example-webpack
 # ... add configuration ...
-gt create -m "feat: add webpack configuration for example"
+gt modify -c -m "feat: add webpack configuration for example"
 
 # Continue through stack...
+gt log  # Verify all branches have commits
 gt submit --no-interactive
 ```
 
