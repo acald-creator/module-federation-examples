@@ -107,7 +107,7 @@ export class BundleAnalyzer {
       name: this.extractBundleName(resource.name),
       url: resource.name,
       size: resource.encodedBodySize || resource.transferSize || 0,
-      gzippedSize: resource.transferSize || undefined,
+      gzippedSize: resource.transferSize ? resource.transferSize : undefined,
       loadTime: resource.duration,
       compressionRatio: this.calculateCompressionRatio(
         resource.decodedBodySize || 0,

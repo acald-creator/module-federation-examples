@@ -13,7 +13,7 @@ export class PerformanceMonitor {
   private metrics: PerformanceMetric[] = [];
   private observers: PerformanceObserver[] = [];
   private startTime: number;
-  private reportTimer?: NodeJS.Timeout;
+  private reportTimer: NodeJS.Timeout | undefined;
 
   constructor(config: Partial<PerformanceMonitorConfig> = {}) {
     this.config = {
@@ -91,18 +91,21 @@ export class PerformanceMonitor {
       name: 'dom_content_loaded',
       value: entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart,
       timestamp: entry.domContentLoadedEventEnd,
+      tags: undefined,
     });
 
     this.addMetric({
       name: 'load_complete',
       value: entry.loadEventEnd - entry.loadEventStart,
       timestamp: entry.loadEventEnd,
+      tags: undefined,
     });
 
     this.addMetric({
       name: 'time_to_interactive',
-      value: entry.domInteractive - entry.navigationStart,
+      value: entry.domInteractive - entry.fetchStart,
       timestamp: entry.domInteractive,
+      tags: undefined,
     });
   }
 
@@ -148,7 +151,7 @@ export class PerformanceMonitor {
       name: `mark_${name}`,
       value: performance.now(),
       timestamp: performance.now(),
-      tags,
+      tags: tags || undefined,
     });
   }
 
@@ -164,7 +167,7 @@ export class PerformanceMonitor {
           name,
           value: measure.duration,
           timestamp: measure.startTime,
-          tags: { ...tags, type: 'measure' },
+          tags: tags ? { ...tags, type: 'measure' } : { type: 'measure' },
         });
         return measure.duration;
       }

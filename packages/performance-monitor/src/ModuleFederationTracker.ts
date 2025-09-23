@@ -286,7 +286,7 @@ export class ModuleFederationTracker {
 
     // Try to extract from webpack chunk names
     const chunkMatch = url.match(/\/([^\/]+)\.js$/);
-    if (chunkMatch) {
+    if (chunkMatch && chunkMatch[1]) {
       return chunkMatch[1];
     }
 
