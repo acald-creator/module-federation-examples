@@ -2,6 +2,7 @@ import Button from '../components/Button';
 import dynamic from 'next/dynamic';
 import Box from '@/components/Box';
 import { styled } from '../../stitches.config';
+import { PerformanceDashboard } from '@mf-examples/performance-monitor';
 
 const RemoteButton = dynamic(() =>
   // @ts-ignore
@@ -23,12 +24,24 @@ const Text = styled('p', {
 export default function Home() {
   return (
     <Box css={{ paddingY: '$6' }}>
-      <Text as="h1">Next JS and React</Text>
+      <Text as="h1">Next JS and React with Module Federation</Text>
+
+      {/* Performance Dashboard */}
+      <PerformanceDashboard
+        includeWebVitals={true}
+        includeModuleFederation={true}
+        includeBundleAnalysis={true}
+        remoteUrls={['http://localhost:8081', 'http://localhost:8082']}
+        autoReport={true}
+        reportInterval={15000}
+        style={{ marginBottom: '32px' }}
+      />
+
       <Text as="h2">Host - Button</Text>
       <Button />
-      <Text as="h2">Client - Button</Text>
+      <Text as="h2">Remote - Button</Text>
       <RemoteButton />
-      <Text as="h2">Client - Cloud Button</Text>
+      <Text as="h2">Cloud - Button</Text>
       <CloudRemoteButton />
     </Box>
   );
