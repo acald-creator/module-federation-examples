@@ -22,7 +22,11 @@ const mockPerformanceObserver = jest.fn().mockImplementation((_callback) => ({
   disconnect: jest.fn(),
   takeRecords: jest.fn(() => []),
 }));
-mockPerformanceObserver.supportedEntryTypes = ['resource', 'navigation', 'measure', 'mark'];
+// Add supportedEntryTypes as a static property
+Object.defineProperty(mockPerformanceObserver, 'supportedEntryTypes', {
+  value: ['resource', 'navigation', 'measure', 'mark'],
+  writable: false
+});
 global.PerformanceObserver = mockPerformanceObserver as any;
 
 // Mock window object
